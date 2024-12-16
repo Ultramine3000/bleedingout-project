@@ -1,0 +1,8 @@
+[gd_resource type="FontFile" load_steps=2 format=2]
+
+[ext_resource type="FontFile" uid="uid://btvadi4yk0a3y" path="res://addons/dreadpon.spatial_gardener/utility/console/fonts/ttf/Urbanist-Regular.ttf" id="1"]
+
+[resource]
+size = 64
+use_filter = true
+font_data = ExtResource( 1 )

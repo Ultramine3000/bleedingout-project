@@ -1,0 +1,160 @@
+[gd_scene load_steps=11 format=3 uid="uid://bibk7nnkdgok3"]
+
+[ext_resource type="Script" path="res://Maps/pause_function.gd" id="1_si12a"]
+[ext_resource type="PackedScene" uid="uid://f24bpdygx35u" path="res://Maps/pause_menu.tscn" id="2_eulkf"]
+[ext_resource type="PackedScene" uid="uid://bjjceeyq3csc3" path="res://Sky/main.tscn" id="2_m7vnb"]
+[ext_resource type="PackedScene" uid="uid://8jw7dujxwrl5" path="res://PlayerRepo/Player_1/Player_1.tscn" id="6_ohaan"]
+[ext_resource type="PackedScene" uid="uid://b1pt37kr6qvv2" path="res://PlayerRepo/Player_2/Player_2.tscn" id="7_fmkmy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ja06o"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.661515, 0.59256, 1, 1)
+roughness = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ub1x6"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.996919, 0, 0.387749, 1)
+roughness = 0.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_35t5f"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(1, 0.06, 0.06, 1)
+roughness = 0.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_4clbs"]
+size = Vector2(75, 75)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n33po"]
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0.767227, 0.597638, 7.70092e-07, 1)
+roughness = 0.0
+
+[node name="World" type="Node3D"]
+process_mode = 3
+script = ExtResource("1_si12a")
+ui_scene_path = ExtResource("2_eulkf")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+transform = Transform3D(-3.78552e-08, 0.5, -0.866025, 2.18557e-08, 0.866025, 0.5, 1, 0, -4.37114e-08, -21.4831, -3.54487, 30.9934)
+use_collision = true
+size = Vector3(5, 2.19495, 22)
+material = SubResource("StandardMaterial3D_ja06o")
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="."]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 3.63411, 1.64476, 5.4934)
+use_collision = true
+size = Vector3(1.95264, 1.13544, 3)
+material = SubResource("StandardMaterial3D_ja06o")
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -1.36589, 2.76894, 5.4934)
+use_collision = true
+size = Vector3(1.95264, 1.13544, 3)
+material = SubResource("StandardMaterial3D_ja06o")
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="."]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 3.63411, 1.64476, -5.44547)
+use_collision = true
+size = Vector3(1.95264, 1.13544, 3)
+material = SubResource("StandardMaterial3D_ja06o")
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -1.36589, 2.76894, -5.97333)
+use_collision = true
+size = Vector3(1.95264, 1.13544, 3)
+material = SubResource("StandardMaterial3D_ja06o")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -18.9907, -0.668569, 33)
+use_collision = true
+size = Vector3(5, 7.30164, 22.9814)
+material = SubResource("StandardMaterial3D_ub1x6")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -32.9907, -0.668569, 19)
+use_collision = true
+size = Vector3(5, 7.30164, 22.9814)
+material = SubResource("StandardMaterial3D_ub1x6")
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.95676e-08, -0.5, 0.866025, 2.18557e-08, 0.866025, 0.5, -1, 4.37114e-08, -3.19989e-08, 20.5067, -3.54487, -30.6645)
+use_collision = true
+size = Vector3(5, 2.19495, 22)
+material = SubResource("StandardMaterial3D_ja06o")
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 18.0144, -0.668569, -32.6711)
+use_collision = true
+size = Vector3(5, 7.30164, 22.9814)
+material = SubResource("StandardMaterial3D_ub1x6")
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, -1.42109e-14, 0, 1, 0, 1.42109e-14, 0, 1, 32.0144, -0.668569, -18.6711)
+use_collision = true
+size = Vector3(5, 7.30164, 22.9814)
+material = SubResource("StandardMaterial3D_ub1x6")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.70174, 1.82467, -0.307411)
+use_collision = true
+size = Vector3(11, 6.04004, 11)
+material = SubResource("StandardMaterial3D_35t5f")
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+use_collision = true
+mesh = SubResource("PlaneMesh_4clbs")
+material = SubResource("StandardMaterial3D_n33po")
+
+[node name="Main" parent="." instance=ExtResource("2_m7vnb")]
+day_time = 12.3658
+planet_axial_tilt = -52.98
+time_scale = 0.0001
+
+[node name="GPUParticlesCollisionBox3D" type="GPUParticlesCollisionBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.035, 0)
+size = Vector3(73.4072, 0.26941, 74.0361)
+
+[node name="GridContainer" type="GridContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewportContainer3" type="SubViewportContainer" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport2" type="SubViewport" parent="GridContainer/SubViewportContainer3"]
+handle_input_locally = false
+size = Vector2i(3840, 1078)
+render_target_update_mode = 4
+
+[node name="player_1" parent="GridContainer/SubViewportContainer3/SubViewport2" instance=ExtResource("6_ohaan")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.959)
+
+[node name="SubViewportContainer4" type="SubViewportContainer" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="SubViewport2" type="SubViewport" parent="GridContainer/SubViewportContainer4"]
+handle_input_locally = false
+msaa_2d = 3
+msaa_3d = 3
+screen_space_aa = 1
+use_taa = true
+scaling_3d_mode = 2
+size = Vector2i(3840, 1078)
+render_target_update_mode = 4
+
+[node name="player_2" parent="GridContainer/SubViewportContainer4/SubViewport2" instance=ExtResource("7_fmkmy")]
+transform = Transform3D(-0.960828, 0, -0.277147, 0, 1, 0, 0.277147, 0, -0.960828, 0, 0.210693, -22.7814)

@@ -1,0 +1,75 @@
+[gd_scene load_steps=14 format=3 uid="uid://ndl1w88n1yfh"]
+
+[ext_resource type="Script" path="res://Blood/blood_spatter.gd" id="1_3hisi"]
+[ext_resource type="Shader" uid="uid://i4530fmjfaxo" path="res://Blood/blood.tres" id="1_op2yh"]
+[ext_resource type="Shader" uid="uid://b1wdkryuh65mm" path="res://Blood/blood_spot.tres" id="2_3wptt"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ajwvf"]
+render_priority = 0
+shader = ExtResource("1_op2yh")
+shader_parameter/ColorParameter = Color(1, 0, 0.071664, 1)
+
+[sub_resource type="Curve" id="Curve_b0mc8"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_pbxb8"]
+curve = SubResource("Curve_b0mc8")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_xu6s0"]
+spread = 20.75
+initial_velocity_min = 1.0
+initial_velocity_max = 4.0
+linear_accel_min = 0.999998
+linear_accel_max = 0.999998
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_pbxb8")
+collision_mode = 2
+sub_emitter_mode = 3
+sub_emitter_amount_at_collision = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_qojui"]
+size = Vector2(0.1, 0.1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1qram"]
+render_priority = 0
+shader = ExtResource("2_3wptt")
+shader_parameter/ColorParameter = Color(1, 0, 0.0705882, 1)
+
+[sub_resource type="Curve" id="Curve_lqtlk"]
+_data = [Vector2(0, 0.709091), 0.0, 0.0, 0, 0, Vector2(0.155844, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_8cc4a"]
+curve = SubResource("Curve_lqtlk")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_qpaod"]
+gravity = Vector3(0, 0, 0)
+scale_max = 3.0
+scale_curve = SubResource("CurveTexture_8cc4a")
+
+[sub_resource type="QuadMesh" id="QuadMesh_ejguh"]
+size = Vector2(0.13, 0.13)
+orientation = 1
+
+[node name="BloodSpatter" type="Node3D" groups=["BloodNodes"]]
+script = ExtResource("1_3hisi")
+
+[node name="blood" type="GPUParticles3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+material_override = SubResource("ShaderMaterial_ajwvf")
+amount_ratio = 0.098
+sub_emitter = NodePath("blood_spot")
+lifetime = 0.75
+process_material = SubResource("ParticleProcessMaterial_xu6s0")
+draw_pass_1 = SubResource("QuadMesh_qojui")
+
+[node name="blood_spot" type="GPUParticles3D" parent="blood"]
+transform = Transform3D(-0.0276083, 0, 0.999619, 0, 1, 0, -0.999619, 0, -0.0276083, 0.372459, -2.37008, -0.363032)
+material_override = SubResource("ShaderMaterial_1qram")
+cast_shadow = 0
+emitting = false
+amount = 10000
+lifetime = 600.0
+process_material = SubResource("ParticleProcessMaterial_qpaod")
+draw_pass_1 = SubResource("QuadMesh_ejguh")
