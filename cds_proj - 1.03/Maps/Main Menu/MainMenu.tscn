@@ -1,11 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://dplyn4n3sxbe3"]
+[gd_scene load_steps=13 format=3 uid="uid://dplyn4n3sxbe3"]
 
-[ext_resource type="PackedScene" uid="uid://bjjceeyq3csc3" path="res://Sky/main.tscn" id="3_my8ff"]
+[ext_resource type="PackedScene" uid="uid://bjjceeyq3csc3" path="res://Sky/environment.tscn" id="3_my8ff"]
 [ext_resource type="Shader" path="res://Outline.gdshader" id="3_sig80"]
 [ext_resource type="Script" path="res://Maps/Main Menu/Orbit.gd" id="4_dbhye"]
 [ext_resource type="Script" path="res://Maps/Main Menu/Controller_Select.gd" id="4_ng4sv"]
-[ext_resource type="Script" path="res://Maps/Main Menu/Start.gd" id="5_ypc8a"]
-[ext_resource type="PackedScene" uid="uid://bibk7nnkdgok3" path="res://Maps/DebugMap.tscn" id="6_1cn6p"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ja06o"]
 diffuse_mode = 3
@@ -34,6 +32,10 @@ specular_mode = 1
 albedo_color = Color(0.767227, 0.597638, 7.70092e-07, 1)
 roughness = 0.0
 
+[sub_resource type="TextMesh" id="TextMesh_1njet"]
+text = "DEBUG"
+font_size = 25
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_brvdd"]
 render_priority = 0
 shader = ExtResource("3_sig80")
@@ -45,110 +47,124 @@ shader_parameter/outline_strength = 0.215
 material = SubResource("ShaderMaterial_brvdd")
 size = Vector2(7.56, 9.235)
 
-[sub_resource type="TextMesh" id="TextMesh_1njet"]
-text = "DEBUG"
-font_size = 25
-
 [node name="World" type="Node3D"]
 process_mode = 3
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="Environment" parent="." instance=ExtResource("3_my8ff")]
+day_time = 12.3658
+planet_axial_tilt = -52.98
+time_scale = 0.0001
+
+[node name="Background" type="Node3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-3.78552e-08, 0.5, -0.866025, 2.18557e-08, 0.866025, 0.5, 1, 0, -4.37114e-08, -21.4831, -3.54487, 30.9934)
 use_collision = true
 size = Vector3(5, 2.19495, 22)
 material = SubResource("StandardMaterial3D_ja06o")
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="."]
+[node name="CSGBox3D6" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 3.63411, 1.64476, 5.4934)
 use_collision = true
 size = Vector3(1.95264, 1.13544, 3)
 material = SubResource("StandardMaterial3D_ja06o")
 
-[node name="CSGBox3D7" type="CSGBox3D" parent="."]
+[node name="CSGBox3D7" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -1.36589, 2.76894, 5.4934)
 use_collision = true
 size = Vector3(1.95264, 1.13544, 3)
 material = SubResource("StandardMaterial3D_ja06o")
 
-[node name="CSGBox3D10" type="CSGBox3D" parent="."]
+[node name="CSGBox3D10" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 3.63411, 1.64476, -5.44547)
 use_collision = true
 size = Vector3(1.95264, 1.13544, 3)
 material = SubResource("StandardMaterial3D_ja06o")
 
-[node name="CSGBox3D11" type="CSGBox3D" parent="."]
+[node name="CSGBox3D11" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -1.36589, 2.76894, -5.97333)
 use_collision = true
 size = Vector3(1.95264, 1.13544, 3)
 material = SubResource("StandardMaterial3D_ja06o")
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="."]
+[node name="CSGBox3D3" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -18.9907, -0.668569, 33)
 use_collision = true
 size = Vector3(5, 7.30164, 22.9814)
 material = SubResource("StandardMaterial3D_ub1x6")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="."]
+[node name="CSGBox3D4" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -32.9907, -0.668569, 19)
 use_collision = true
 size = Vector3(5, 7.30164, 22.9814)
 material = SubResource("StandardMaterial3D_ub1x6")
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="."]
+[node name="CSGBox3D5" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.95676e-08, -0.5, 0.866025, 2.18557e-08, 0.866025, 0.5, -1, 4.37114e-08, -3.19989e-08, 20.5067, -3.54487, -30.6645)
 use_collision = true
 size = Vector3(5, 2.19495, 22)
 material = SubResource("StandardMaterial3D_ja06o")
 
-[node name="CSGBox3D8" type="CSGBox3D" parent="."]
+[node name="CSGBox3D8" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 18.0144, -0.668569, -32.6711)
 use_collision = true
 size = Vector3(5, 7.30164, 22.9814)
 material = SubResource("StandardMaterial3D_ub1x6")
 
-[node name="CSGBox3D9" type="CSGBox3D" parent="."]
+[node name="CSGBox3D9" type="CSGBox3D" parent="Background"]
 transform = Transform3D(1, 0, -1.42109e-14, 0, 1, 0, 1.42109e-14, 0, 1, 32.0144, -0.668569, -18.6711)
 use_collision = true
 size = Vector3(5, 7.30164, 22.9814)
 material = SubResource("StandardMaterial3D_ub1x6")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="."]
+[node name="CSGBox3D2" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.70174, 1.82467, -0.307411)
 use_collision = true
 size = Vector3(11, 6.04004, 11)
 material = SubResource("StandardMaterial3D_35t5f")
 
-[node name="CSGBox3D12" type="CSGBox3D" parent="."]
+[node name="CSGBox3D12" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -31.3511, 8.59933, -25.8103)
 use_collision = true
 size = Vector3(6.27844, 19.5894, 5.34082)
 material = SubResource("StandardMaterial3D_35t5f")
 
-[node name="CSGBox3D13" type="CSGBox3D" parent="."]
+[node name="CSGBox3D13" type="CSGBox3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 29.4571, 8.59933, 31.0844)
 use_collision = true
 size = Vector3(6.27844, 19.5894, 5.34082)
 material = SubResource("StandardMaterial3D_35t5f")
 
-[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+[node name="CSGMesh3D" type="CSGMesh3D" parent="Background"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 use_collision = true
 mesh = SubResource("PlaneMesh_4clbs")
 material = SubResource("StandardMaterial3D_n33po")
 
-[node name="Main" parent="." instance=ExtResource("3_my8ff")]
-day_time = 12.3658
-planet_axial_tilt = -52.98
-time_scale = 0.0001
+[node name="CSGMesh3D2" type="CSGMesh3D" parent="Background"]
+transform = Transform3D(-2.01422e-06, 0, -46.08, 0, 46.08, 0, 46.08, 0, -2.01422e-06, 47.3886, 9.42923, 8)
+mesh = SubResource("TextMesh_1njet")
 
-[node name="GPUParticlesCollisionBox3D" type="GPUParticlesCollisionBox3D" parent="."]
+[node name="CSGMesh3D3" type="CSGMesh3D" parent="Background"]
+transform = Transform3D(6.04266e-06, 0, 46.08, 0, 46.08, 0, -46.08, 0, 6.04266e-06, -42.6114, 9.42923, 8)
+mesh = SubResource("TextMesh_1njet")
+
+[node name="CSGMesh3D4" type="CSGMesh3D" parent="Background"]
+transform = Transform3D(46.08, 0, -8.05688e-06, 0, 46.08, 0, 8.05688e-06, 0, 46.08, -0.611416, 9.42923, -47)
+mesh = SubResource("TextMesh_1njet")
+
+[node name="CSGMesh3D5" type="CSGMesh3D" parent="Background"]
+transform = Transform3D(-46.08, 0, 4.02844e-06, 0, 46.08, 0, -4.02844e-06, 0, -46.08, -0.611416, 9.42923, 51)
+mesh = SubResource("TextMesh_1njet")
+
+[node name="GPUParticlesCollisionBox3D" type="GPUParticlesCollisionBox3D" parent="Background"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.339844, -0.978539, -0.0961914)
 size = Vector3(73.4072, 2.47461, 74.0361)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.68942, 0)
 script = ExtResource("4_dbhye")
-target_node = NodePath("../Main")
+target_node = NodePath("../Environment")
 orbit_radius = 23.46
 orbit_speed = 0.1
 tilt_angle = 32.53
@@ -157,79 +173,16 @@ tilt_angle = 32.53
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, -2.06561)
 mesh = SubResource("QuadMesh_b2ro7")
 
-[node name="CSGMesh3D2" type="CSGMesh3D" parent="."]
-transform = Transform3D(-2.01422e-06, 0, -46.08, 0, 46.08, 0, 46.08, 0, -2.01422e-06, 47.3886, 9.42923, 8)
-mesh = SubResource("TextMesh_1njet")
-
-[node name="CSGMesh3D3" type="CSGMesh3D" parent="."]
-transform = Transform3D(6.04266e-06, 0, 46.08, 0, 46.08, 0, -46.08, 0, 6.04266e-06, -42.6114, 9.42923, 8)
-mesh = SubResource("TextMesh_1njet")
-
-[node name="CSGMesh3D4" type="CSGMesh3D" parent="."]
-transform = Transform3D(46.08, 0, -8.05688e-06, 0, 46.08, 0, 8.05688e-06, 0, 46.08, -0.611416, 9.42923, -47)
-mesh = SubResource("TextMesh_1njet")
-
-[node name="CSGMesh3D5" type="CSGMesh3D" parent="."]
-transform = Transform3D(-46.08, 0, 4.02844e-06, 0, 46.08, 0, -4.02844e-06, 0, -46.08, -0.611416, 9.42923, 51)
-mesh = SubResource("TextMesh_1njet")
-
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="Control" type="Control" parent="CanvasLayer"]
+[node name="MainMenu" type="Control" parent="CanvasLayer"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("4_ng4sv")
 metadata/_edit_use_anchors_ = true
-
-[node name="Button" type="Button" parent="CanvasLayer/Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -96.0
-offset_top = 76.0
-offset_right = 96.0
-offset_bottom = 116.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Start"
-script = ExtResource("5_ypc8a")
-scene_to_switch_to = ExtResource("6_1cn6p")
-
-[node name="Button2" type="Button" parent="CanvasLayer/Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -96.0
-offset_top = 140.0
-offset_right = 96.0
-offset_bottom = 180.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Options
-"
-
-[node name="Button3" type="Button" parent="CanvasLayer/Control"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -96.0
-offset_top = 204.0
-offset_right = 96.0
-offset_bottom = 244.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "Exit
-"

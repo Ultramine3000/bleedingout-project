@@ -5,33 +5,35 @@ extends Node3D
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
-var camera: Camera3D
-var camera_parent: Node
+var is_ads: bool = false
+var is_running: bool = false
+var is_walking: bool = false
+var is_reloading: bool = false
+var is_meleeing: bool = false
+var is_inspecting: bool = false
+var is_firing: bool = false
+var should_lock_animation: bool = false
 
-var is_ads = false
-var is_running = false
-var is_walking = false
-var is_reloading = false
-var is_meleeing = false
-var is_inspecting = false
-var lock_animation = false
-var is_firing = false
+var ammo_count: int = 30
+var max_ammo: int = 30
+var firing_timer: float = 0.0
 
-var ammo_count = 30
-var max_ammo = 30
-var firing_timer = 0.0
+var blood_counter: int = 0
 
-var blood_counter = 0
+const FIRE_INPUT_SUFFIX: String = "_fire"
+const RELOAD_INPUT_SUFFIX: String = "_reload"
+const MELEE_INPUT_SUFFIX: String = "_melee"
+const INSPECT_INPUT_SUFFIX: String = "_inspect"
+const ADS_INPUT_SUFFIX: String = "_aim"
+const RUN_INPUT_SUFFIX: String = "_sprint"
+const MOVE_INPUTS_SUFFIX: Dictionary = {
+	"FORWARD" : "_move_forward",
+	"BACKWARD" : "_move_backward",
+	"LEFT" : "_move_left",
+	"RIGHT" : "_move_right",
+}
 
-var INPUT_FIRE = ""
-var INPUT_RELOAD = ""
-var INPUT_MELEE = ""
-var INPUT_INSPECT = ""
-var INPUT_ADS = ""
-var INPUT_RUN = ""
-var INPUT_MOVE = []
-
-var blend_times = {
+const BLEND_TIMES: Dictionary = {
 	"idle": 0.01,
 	"walking": 0.5,
 	"running": 0.5,
@@ -47,7 +49,7 @@ var blend_times = {
 	"draw": 0.0
 }
 
-var animation_speeds = {
+const ANIMATION_SPEEDS: Dictionary = {
 	"idle": 1.0,
 	"walking": 1.0,
 	"running": 1.2,
@@ -63,89 +65,40 @@ var animation_speeds = {
 	"draw": 1.0
 }
 
-const RECOIL_PER_SHOT = 0.01
-const RECOIL_RECOVERY_SPEED = 8.0
-var recoil_x = 0.0
-var recoil_y = 0.0
-var weapon_neutral_rot = Vector3()
+const RECOIL_PER_SHOT: float = 0.01
+const RECOIL_RECOVERY_SPEED: float = 8.0
+var recoil_x: float = 0.0
+var recoil_y: float = 0.0
+var weapon_neutral_rot: Vector3 = Vector3.ZERO
 
-func _ready():
-	var player_id = find_player_id()
+func _ready() -> void:
+	var player: Player = get_parent().get_parent().get_parent()
+	for mesh in find_child("Skeleton3D").get_children():
+		mesh.set_layer_mask_value(1, false)
+		mesh.set_layer_mask_value(13 - player.id, true)
+	await _play_draw_animation_on_start()
+	_play_animation("idle")
 
-	if player_id != "":
-		INPUT_FIRE = player_id + "_fire"
-		INPUT_RELOAD = player_id + "_reload"
-		INPUT_MELEE = player_id + "_melee"
-		INPUT_INSPECT = player_id + "_inspect"
-		INPUT_ADS = player_id + "_aim"
-		INPUT_RUN = player_id + "_sprint"
-		INPUT_MOVE = [
-			player_id + "_move_forward",
-			player_id + "_move_backward",
-			player_id + "_move_left",
-			player_id + "_move_right"
-		]
-	else:
-		INPUT_FIRE = "default_fire"
-		INPUT_RELOAD = "default_reload"
-		INPUT_MELEE = "default_melee"
-		INPUT_INSPECT = "default_inspect"
-		INPUT_ADS = "default_aim"
-		INPUT_RUN = "default_sprint"
-		INPUT_MOVE = [
-			"default_move_forward",
-			"default_move_backward",
-			"default_move_left",
-			"default_move_right"
-		]
-
-	camera = find_camera()
-	if camera == null:
-		print("Error: Camera not found!")
-	
-	weapon_neutral_rot = self.rotation
-	
-	await play_draw_animation_on_start()
-	play_animation("idle")
-
-func find_player_id() -> String:
-	var current = self
-	while current:
-		if current.name.begins_with("player_"):
-			return current.name.replace("player_", "p")
-		elif current.name.begins_with("p"):
-			return current.name
-		current = current.get_parent()
-	return ""
-
-func find_camera() -> Camera3D:
-	var current = self
-	while current:
-		if current is Camera3D:
-			return current
-		current = current.get_parent()
-	return null
-
-func _process(delta):
-	if lock_animation:
+func _physics_process(delta: float) -> void:
+	if should_lock_animation:
 		return
-	handle_firing(delta)
-	handle_recoil_recovery(delta)
-	handle_ads()
-	handle_movement()
-	handle_actions()
+	
+	_handle_firing(delta)
+	_handle_recoil_recovery(delta)
+	_handle_ads()
+	_handle_movement()
+	_handle_actions()
 
-func play_draw_animation_on_start():
-	if animation_player and animation_player.has_animation("draw"):
-		lock_animation = true
-		play_animation("draw")
-		await wait_for_animation("draw")
-		lock_animation = false
-	else:
-		print("No draw animation found.")
+func _play_draw_animation_on_start() -> void:
+	if (not animation_player) or (not animation_player.has_animation("draw")):
+		return
+	should_lock_animation = true
+	_play_animation("draw")
+	await _wait_for_animation("draw")
+	should_lock_animation = false
 
-func handle_firing(delta):
-	if Input.is_action_pressed(INPUT_FIRE) and ammo_count > 0:
+func _handle_firing(delta: float) -> void:
+	if Input.is_action_pressed(_input_name(FIRE_INPUT_SUFFIX)) and ammo_count > 0:
 		is_firing = true
 		firing_timer += delta
 		if firing_timer >= 0.1:
@@ -153,13 +106,13 @@ func handle_firing(delta):
 			ammo_count -= 1
 			print("Ammo:", ammo_count)
 
-			play_animation("full_auto_ADS_fire" if is_ads else "full_auto_fire")
+			_play_animation("full_auto_ADS_fire" if is_ads else "full_auto_fire")
 
 			# Vertical recoil
 			recoil_x += RECOIL_PER_SHOT
 			# Horizontal recoil: random left or right kick
 			# Let's say we randomize between -RECOIL_PER_SHOT*0.5 and RECOIL_PER_SHOT*0.5
-			recoil_y += randf_range(-RECOIL_PER_SHOT*0.5, RECOIL_PER_SHOT*0.5)
+			recoil_y += randf_range(-RECOIL_PER_SHOT * 0.5, RECOIL_PER_SHOT * 0.5)
 
 			update_weapon_recoil()
 
@@ -167,112 +120,112 @@ func handle_firing(delta):
 			if raycast and raycast.is_colliding():
 				var collider = raycast.get_collider()
 				if collider is CharacterBody3D and collider.is_in_group("Player"):
-					place_blood(collider)
+					_place_blood(collider)
 	else:
-		if is_firing and (Input.is_action_just_released(INPUT_FIRE) or ammo_count <= 0):
+		if is_firing and (Input.is_action_just_released(_input_name(FIRE_INPUT_SUFFIX)) or ammo_count <= 0):
 			is_firing = false
 			if ammo_count <= 0:
 				print("Out of ammo!")
-			play_animation("ADS_idle" if is_ads else "idle")
+			_play_animation("ADS_idle" if is_ads else "idle")
 
-func handle_recoil_recovery(delta):
+func _handle_recoil_recovery(delta: float) -> void:
 	if not is_firing:
 		recoil_x = lerp(recoil_x, 0.0, RECOIL_RECOVERY_SPEED * delta)
 		recoil_y = lerp(recoil_y, 0.0, RECOIL_RECOVERY_SPEED * delta)
 	update_weapon_recoil()
 
-func update_weapon_recoil():
+func update_weapon_recoil() -> void:
 	var rot = weapon_neutral_rot
 	rot.x += recoil_x    # Kick up
 	rot.y += recoil_y    # Kick left/right randomly
 	self.rotation = rot
 
-func handle_ads():
-	if is_reloading or is_meleeing or is_inspecting or lock_animation:
+func _handle_ads() -> void:
+	if is_reloading or is_meleeing or is_inspecting or should_lock_animation:
 		return
 
-	if Input.is_action_just_pressed(INPUT_ADS) and not is_ads:
+	if Input.is_action_just_pressed(_input_name(ADS_INPUT_SUFFIX)) and not is_ads:
 		is_ads = true
-		await play_ads_sequence("idle_to_ADS", "ADS_idle")
+		await _play_ads_sequence("idle_to_ADS", "ADS_idle")
 
-	if Input.is_action_just_released(INPUT_ADS) and is_ads:
+	if Input.is_action_just_released(_input_name(ADS_INPUT_SUFFIX)) and is_ads:
 		is_ads = false
-		await play_ads_sequence("ADS_to_idle", "idle")
+		await _play_ads_sequence("ADS_to_idle", "idle")
 
-func handle_movement():
-	if is_reloading or is_meleeing or is_inspecting or lock_animation or is_firing or is_ads:
+func _handle_movement() -> void:
+	if is_reloading or is_meleeing or is_inspecting or should_lock_animation or is_firing or is_ads:
 		return
 
 	var is_moving = false
-	for action in INPUT_MOVE:
-		if Input.is_action_pressed(action):
+	for suffix in MOVE_INPUTS_SUFFIX.values():
+		if Input.is_action_pressed(_input_name(suffix)):
 			is_moving = true
 			break
 
 	if is_moving:
-		if Input.is_action_pressed(INPUT_RUN):
+		if Input.is_action_pressed(_input_name(RUN_INPUT_SUFFIX)):
 			if not is_running:
 				is_running = true
 				is_walking = false
-				play_animation("running")
+				_play_animation("running")
 		else:
 			if not is_walking:
 				is_walking = true
 				is_running = false
-				play_animation("walking")
+				_play_animation("walking")
 	else:
 		if is_walking or is_running:
 			is_walking = false
 			is_running = false
-			play_animation("idle")
+			_play_animation("idle")
 
-func handle_actions():
-	if is_reloading or is_meleeing or is_inspecting or lock_animation:
+func _handle_actions() -> void:
+	if is_reloading or is_meleeing or is_inspecting or should_lock_animation:
 		return
 
-	if Input.is_action_just_pressed(INPUT_RELOAD):
-		await handle_reload()
-	elif Input.is_action_just_pressed(INPUT_MELEE):
-		await handle_melee()
-	elif Input.is_action_just_pressed(INPUT_INSPECT):
-		await handle_inspect()
+	if Input.is_action_just_pressed(_input_name(RELOAD_INPUT_SUFFIX)):
+		await _handle_reload()
+	elif Input.is_action_just_pressed(_input_name(MELEE_INPUT_SUFFIX)):
+		await _handle_melee()
+	elif Input.is_action_just_pressed(_input_name(INSPECT_INPUT_SUFFIX)):
+		await _handle_inspect()
 
-func handle_reload() -> void:
-	if lock_animation or is_reloading or is_meleeing or is_inspecting:
+func _handle_reload() -> void:
+	if should_lock_animation or is_reloading or is_meleeing or is_inspecting:
 		return
 
 	is_reloading = true
-	lock_animation = true
+	should_lock_animation = true
 
 	var reload_anim = "reload_empty" if ammo_count == 0 else "reload_not_empty"
-	play_animation(reload_anim)
-	await wait_for_animation(reload_anim)
+	_play_animation(reload_anim)
+	await _wait_for_animation(reload_anim)
 
 	ammo_count = max_ammo
 	print("Ammo reloaded:", ammo_count)
 
 	is_reloading = false
-	lock_animation = false
+	should_lock_animation = false
 
-func handle_melee() -> void:
-	if lock_animation or is_reloading or is_inspecting:
+func _handle_melee() -> void:
+	if should_lock_animation or is_reloading or is_inspecting:
 		return
 
 	is_meleeing = true
-	play_animation("melee")
-	await wait_for_animation("melee")
+	_play_animation("melee")
+	await _wait_for_animation("melee")
 	is_meleeing = false
 
-func handle_inspect() -> void:
-	if lock_animation or is_reloading or is_meleeing:
+func _handle_inspect() -> void:
+	if should_lock_animation or is_reloading or is_meleeing:
 		return
 
 	is_inspecting = true
-	play_animation("inspect")
-	await wait_for_animation("inspect")
+	_play_animation("inspect")
+	await _wait_for_animation("inspect")
 	is_inspecting = false
 
-func place_blood(player: Node3D):
+func _place_blood(player: Node3D) -> void:
 	if not blood_scene:
 		print("Error: blood_scene not assigned!")
 		return
@@ -313,22 +266,24 @@ func place_blood(player: Node3D):
 
 	print("Blood spatter placed at", collision_point, "under Head node.")
 
+func _play_ads_sequence(start_anim: String, loop_anim: String) -> void:
+	should_lock_animation = true
+	_play_animation(start_anim)
+	await _wait_for_animation(start_anim)
+	_play_animation(loop_anim)
+	should_lock_animation = false
 
-
-func play_ads_sequence(start_anim: String, loop_anim: String) -> void:
-	lock_animation = true
-	play_animation(start_anim)
-	await wait_for_animation(start_anim)
-	play_animation(loop_anim)
-	lock_animation = false
-
-func play_animation(anim_name: String):
-	var blend_time = blend_times.get(anim_name, 0.1)
-	var speed = animation_speeds.get(anim_name, 1.0)
+func _play_animation(anim_name: String) -> void:
+	var blend_time = BLEND_TIMES.get(anim_name, 0.1)
+	var speed = ANIMATION_SPEEDS.get(anim_name, 1.0)
 	if animation_player.current_animation != anim_name or not animation_player.is_playing():
 		animation_player.play(anim_name, blend_time)
 		animation_player.speed_scale = speed
 
-func wait_for_animation(anim_name: String) -> void:
+func _wait_for_animation(anim_name: String) -> void:
 	while animation_player.is_playing() and animation_player.current_animation == anim_name:
 		await get_tree().process_frame
+
+func _input_name(suffix: String) -> String:
+	var player: Player = get_parent().get_parent().get_parent()
+	return "p%d%s" % [player.id, suffix]
