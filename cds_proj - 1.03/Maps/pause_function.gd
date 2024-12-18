@@ -16,7 +16,6 @@ func _ready() -> void:
 		player.id = p + 1
 		%GridContainer.add_child(player_view)
 		player.global_position = spawn_points.get_child(p).global_position
-		player.mesh.set_layer_mask_value(1, false)
 		player.mesh.set_layer_mask_value(20 - p, true)
 		player.camera.set_cull_mask_value(20 - p, false)
 		player.camera.set_cull_mask_value(12 - p, true)

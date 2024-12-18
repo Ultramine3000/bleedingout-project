@@ -131,7 +131,7 @@ func _load_equipment() -> void:
 func _apply_equip_bob(delta: float) -> void:
 	t_equip_bob += delta * EQUIP_BOB_FREQ
 	var bob_offset_y: float = sin(t_equip_bob) * equip_bob_intensity * 0.1  # Scale down intensity by 90%
-	equip.transform.origin.y = bob_offset_y
+	equip.position.y = bob_offset_y
 
 func _subtle_headbob(time: float) -> Vector3:
 	var pos = Vector3.ZERO

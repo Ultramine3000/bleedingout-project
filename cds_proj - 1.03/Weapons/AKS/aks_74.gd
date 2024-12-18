@@ -74,7 +74,6 @@ var weapon_neutral_rot: Vector3 = Vector3.ZERO
 func _ready() -> void:
 	var player: Player = get_parent().get_parent().get_parent()
 	for mesh in find_child("Skeleton3D").get_children():
-		mesh.set_layer_mask_value(1, false)
 		mesh.set_layer_mask_value(13 - player.id, true)
 	await _play_draw_animation_on_start()
 	_play_animation("idle")
