@@ -4,7 +4,7 @@ extends Node
 
 var ui_instance: Node = null
 var is_ui_open: bool = false
-var number_of_players: int = 4
+var number_of_players: int = 2
 
 @onready var spawn_points: Node3D = $SpawnPoints
 
