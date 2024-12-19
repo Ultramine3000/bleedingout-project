@@ -9,6 +9,7 @@ class_name Player
 @onready var walk_sound: AudioStreamPlayer3D = $WalkSound
 @onready var mesh: MeshInstance3D = $Skeleton3D/PlayerMesh
 @onready var equip: Node3D = $Camera3D/Equip
+@onready var hud: Control = $"../HUD"
 
 # Constants for movement and control
 const SPEED: float = 5.0
@@ -118,6 +119,9 @@ func _physics_process(delta: float) -> void:
 	# Apply equip node bobbing
 	_apply_equip_bob(delta)
 	move_and_slide()
+
+func update_hud_ui(ammo_count: int) -> void:
+	hud.update_ui(ammo_count)
 
 func _load_equipment() -> void:
 	if not equipment_scene_1:
