@@ -52,10 +52,7 @@ scale_curve = SubResource("CurveTexture_8cc4a")
 size = Vector2(0.13, 0.13)
 orientation = 1
 
-[node name="BloodSpatter" type="Node3D" groups=["BloodNodes"]]
-script = ExtResource("1_3hisi")
-
-[node name="blood" type="GPUParticles3D" parent="."]
+[node name="blood" type="GPUParticles3D" groups=["BloodNodes"]]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
 material_override = SubResource("ShaderMaterial_ajwvf")
 amount_ratio = 0.098
@@ -63,8 +60,9 @@ sub_emitter = NodePath("blood_spot")
 lifetime = 0.75
 process_material = SubResource("ParticleProcessMaterial_xu6s0")
 draw_pass_1 = SubResource("QuadMesh_qojui")
+script = ExtResource("1_3hisi")
 
-[node name="blood_spot" type="GPUParticles3D" parent="blood"]
+[node name="blood_spot" type="GPUParticles3D" parent="."]
 transform = Transform3D(-0.0276083, 0, 0.999619, 0, 1, 0, -0.999619, 0, -0.0276083, 0.372459, -2.37008, -0.363032)
 material_override = SubResource("ShaderMaterial_1qram")
 cast_shadow = 0

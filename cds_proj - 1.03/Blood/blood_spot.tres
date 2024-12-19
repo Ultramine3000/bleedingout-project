@@ -206,6 +206,7 @@ void fragment() {
 
 }
 "
+graph_offset = Vector2(-284.391, -16.9067)
 modes/diffuse = 3
 modes/specular = 1
 nodes/vertex/3/node = SubResource("VisualShaderNodeInput_tmsm5")

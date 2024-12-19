@@ -1,8 +1,8 @@
 extends Node3D
 
-@export var raycast: RayCast3D
 @export var blood_scene: PackedScene
 
+@onready var raycast: RayCast3D = $RayCast3D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 var holder: Player = null
@@ -124,10 +124,10 @@ func _handle_firing(delta: float) -> void:
 			recoil_y += randf_range(-RECOIL_PER_SHOT * 0.5, RECOIL_PER_SHOT * 0.5)
 			update_weapon_recoil()
 			# Check hit and place blood
-			if raycast and raycast.is_colliding():
-				var collider = raycast.get_collider()
-				if collider is CharacterBody3D and collider.is_in_group("Player"):
-					_place_blood(collider)
+			if raycast.is_colliding():
+				var collider: Node3D = raycast.get_collider()
+				if raycast.get_collider() is Player:
+					_place_blood(collider, raycast.get_collision_point())
 	else:
 		if is_firing and \
 		  (Input.is_action_just_released(_input_name(FIRE_INPUT_SUFFIX)) or \
@@ -160,7 +160,8 @@ func _handle_ads() -> void:
 		await _play_ads_sequence("ADS_to_idle", "idle")
 
 func _handle_movement() -> void:
-	if is_reloading or is_meleeing or is_inspecting or should_lock_animation or is_firing or is_ads:
+	if is_reloading or is_meleeing or is_inspecting or \
+	  should_lock_animation or is_firing or is_ads:
 		return
 	var is_moving = false
 	for suffix in MOVE_INPUTS_SUFFIX.values():
@@ -222,38 +223,14 @@ func _handle_inspect() -> void:
 	await _wait_for_animation("inspect")
 	is_inspecting = false
 
-func _place_blood(player: Node3D) -> void:
+func _place_blood(target: Player, collision_point: Vector3) -> void:
 	if not blood_scene:
 		print("Error: blood_scene not assigned!")
 		return
-	# Manually search for the Head node under the Player node
-	var head_node: Node = null
-	for child in player.get_children():
-		if child.name == "Head":
-			head_node = child
-			break
-	if head_node == null:
-		print("Error: Head node not found under player!")
-		return
-	# Instantiate the blood scene
-	var blood_instance = blood_scene.instantiate()
-	blood_counter += 1
-	blood_instance.name = "blood_spatter_%d" % blood_counter
-	# Add blood instance to the Head node
-	head_node.add_child(blood_instance)
-	# Get collision information
-	var collision_point = raycast.get_collision_point()
-	var collision_normal = raycast.get_collision_normal()
-	# Calculate forward direction based on collision normal
-	var forward = Vector3(collision_normal.x, 0, collision_normal.z)
-	if forward.length() < 0.01:
-		forward = Vector3(1, 0, 0)  # Arbitrary fallback direction
-	else:
-		forward = forward.normalized()
-	# Set position and orientation of the blood spatter
-	blood_instance.global_transform.origin = collision_point
-	blood_instance.look_at(collision_point + forward, Vector3(0, 1, 0))
-	print("Blood spatter placed at", collision_point, "under Head node.")
+	var blood: GPUParticles3D = blood_scene.instantiate()
+	target.add_child(blood)
+	blood.global_position = collision_point
+	blood.rotate_y(Vector3(0.0, blood.position.y, 0.0).angle_to(blood.position))
 
 func _play_ads_sequence(start_anim: String, loop_anim: String) -> void:
 	should_lock_animation = true
