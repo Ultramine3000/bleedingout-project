@@ -43,24 +43,20 @@ func _decrement_current_index() -> void:
 
 func _initialize_buttons() -> void:
 	var initial_children: Array[Node] = get_children()
-	
 	# Add the MainMenuButtons in the _ready func as children of the MainMenu node 
 	for button in buttons:
 		add_child(button)
-	
 	# Append buttons that were already children of the arrays list
 	for child in initial_children:
 		if child is MainMenuButton:
 			buttons.append(child)
 		elif child is Button:
 			print("DEBUG: Use MainMenuButton instead of Button for MainMenu.")
-	
 	# Offset their y position based on their index
 	var y_offset: float = 64.0
 	for button in buttons.slice(1):
 		button.position.y += y_offset
 		y_offset += 64.0
-	
 	# Ensure the first button is focused
 	if buttons.size() > 0:
 		buttons[current_index].grab_focus()

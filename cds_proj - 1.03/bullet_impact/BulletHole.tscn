@@ -1,41 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bbidk6d64xvtr"]
+[gd_scene load_steps=3 format=3 uid="uid://bbidk6d64xvtr"]
 
 [ext_resource type="Texture2D" uid="uid://cndwl7cjk1v3r" path="res://bullet_impact/bullethole.png" id="1_bqq07"]
-[ext_resource type="QuadMesh" uid="uid://iljy1jvoryvc" path="res://bullet_impact/bulletsmoke.tres" id="2_p2y11"]
-[ext_resource type="Script" path="res://bullet_impact/smokeimpact_orientation.gd" id="3_go706"]
+[ext_resource type="Script" path="res://bullet_impact/bullet_hole.gd" id="2_h0juh"]
 
-[sub_resource type="Curve" id="Curve_bujng"]
-_data = [Vector2(0.00837989, 0), 0.0, 0.0, 0, 0, Vector2(0.502793, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 3
-
-[sub_resource type="CurveTexture" id="CurveTexture_4s8jc"]
-curve = SubResource("Curve_bujng")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_1advn"]
-lifetime_randomness = 1.0
-angle_min = -360.0
-angle_max = 360.0
-direction = Vector3(0, 0, -1)
-spread = 10.0
-initial_velocity_min = 5.0
-initial_velocity_max = 5.0
-gravity = Vector3(0, 0, 0)
-color = Color(1, 1, 1, 0.141176)
-alpha_curve = SubResource("CurveTexture_4s8jc")
-anim_offset_max = 1.0
-
-[node name="bullet" type="Decal"]
+[node name="BulletHole" type="Decal"]
 size = Vector3(0.08, 0.08, 0.08)
 texture_albedo = ExtResource("1_bqq07")
-
-[node name="impact_smoke" type="Node3D" parent="."]
-
-[node name="Particles3D" type="GPUParticles3D" parent="impact_smoke"]
-transform = Transform3D(1, 0, -8.52651e-14, 0, 1, 0, 8.52651e-14, 0, 1, 0, 0, 0)
-emitting = false
-lifetime = 0.79
-speed_scale = 0.5
-randomness = 1.0
-process_material = SubResource("ParticleProcessMaterial_1advn")
-draw_pass_1 = ExtResource("2_p2y11")
-script = ExtResource("3_go706")
+script = ExtResource("2_h0juh")

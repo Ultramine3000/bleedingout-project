@@ -53,10 +53,25 @@ var is_walking: bool = false
 var current_tilt_angle: float = 0.0  # Variable to track the current tilt angle
 var camera_init_y: float = 0.0
 
+var is_targetting_player: bool = false
+
 func _ready() -> void:
 	camera_init_y = camera.position.y
 	camera.fov = FOV_DEFAULT  # Set default FOV
 	_load_equipment()
+
+func _process(_delta: float) -> void:
+	var equipment: Node3D = equip.get_child(0)
+	if not (equipment and equipment.is_in_group("Weapon")):
+		return
+	if equipment.raycast.is_colliding():
+		var collider: Object = equipment.raycast.get_collider()
+		if (not is_targetting_player and collider is Player) or \
+		  is_targetting_player and not collider is Player:
+			_toggle_is_targetting_player()
+	else:
+		if is_targetting_player:
+			_toggle_is_targetting_player()
 
 func _physics_process(delta: float) -> void:
 	var camera_move: Vector2 = Input.get_vector(
@@ -120,8 +135,12 @@ func _physics_process(delta: float) -> void:
 	_apply_equip_bob(delta)
 	move_and_slide()
 
-func update_hud_ui(ammo_count: int) -> void:
-	hud.update_ui(ammo_count)
+func update_hud_ui(ammo_count: int, color: Color = Color(1.0, 1.0, 1.0, 1.0)) -> void:
+	hud.update_ui(ammo_count, color)
+
+func _toggle_is_targetting_player():
+	is_targetting_player = !is_targetting_player
+	hud.recolor_reticle(Color.RED if is_targetting_player else Color.WHITE)
 
 func _load_equipment() -> void:
 	if not equipment_scene_1:

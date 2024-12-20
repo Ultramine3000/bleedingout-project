@@ -1,6 +1,7 @@
 extends Node3D
 
 @export var blood_scene: PackedScene
+@export var bullethole_scene: PackedScene
 
 @onready var raycast: RayCast3D = $RayCast3D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -95,11 +96,11 @@ func get_ammo_count() -> int:
 
 func _decrement_ammo_count() -> void:
 	ammo_count -= 1
-	holder.update_hud_ui(ammo_count)
+	holder.update_hud_ui(ammo_count, Color.WHITE if ammo_count > 0 else Color.RED)
 
 func _reset_ammo_count() -> void:
 	ammo_count = max_ammo
-	holder.update_hud_ui(ammo_count)
+	holder.update_hud_ui(ammo_count, Color.WHITE)
 
 func _play_draw_animation_on_start() -> void:
 	if (not animation_player) or (not animation_player.has_animation("draw")):
@@ -126,8 +127,10 @@ func _handle_firing(delta: float) -> void:
 			# Check hit and place blood
 			if raycast.is_colliding():
 				var collider: Node3D = raycast.get_collider()
-				if raycast.get_collider() is Player:
-					_place_blood(collider, raycast.get_collision_point())
+				if collider is Player:
+					_place_decal(blood_scene, collider, raycast.get_collision_point())
+				elif (collider is StaticBody3D) or (collider is GeometryInstance3D):
+					_place_decal(bullethole_scene, collider, raycast.get_collision_point())
 	else:
 		if is_firing and \
 		  (Input.is_action_just_released(_input_name(FIRE_INPUT_SUFFIX)) or \
@@ -223,14 +226,14 @@ func _handle_inspect() -> void:
 	await _wait_for_animation("inspect")
 	is_inspecting = false
 
-func _place_blood(target: Player, collision_point: Vector3) -> void:
-	if not blood_scene:
-		print("Error: blood_scene not assigned!")
+func _place_decal(decal_scene: PackedScene, target: Node3D, collision_point: Vector3) -> void:
+	var decal: Node3D = decal_scene.instantiate()
+	if not (decal is Blood or decal is BulletHole):
 		return
-	var blood: GPUParticles3D = blood_scene.instantiate()
-	target.add_child(blood)
-	blood.global_position = collision_point
-	blood.rotate_y(Vector3(0.0, blood.position.y, 0.0).angle_to(blood.position))
+	target.add_child(decal)
+	decal.global_position = collision_point
+	if not raycast.get_collision_normal() == Vector3.UP:
+		decal.look_at(collision_point + raycast.get_collision_normal())
 
 func _play_ads_sequence(start_anim: String, loop_anim: String) -> void:
 	should_lock_animation = true
