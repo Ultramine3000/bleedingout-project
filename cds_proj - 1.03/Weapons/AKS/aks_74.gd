@@ -124,7 +124,7 @@ func _handle_firing(delta: float) -> void:
 			# Let's say we randomize between -RECOIL_PER_SHOT*0.5 and RECOIL_PER_SHOT*0.5
 			recoil_y += randf_range(-RECOIL_PER_SHOT * 0.5, RECOIL_PER_SHOT * 0.5)
 			update_weapon_recoil()
-			# Check hit and place blood
+			# Check hit and place blood or bullet hole
 			if raycast.is_colliding():
 				var collider: Node3D = raycast.get_collider()
 				if collider is Player:
@@ -132,9 +132,10 @@ func _handle_firing(delta: float) -> void:
 				elif (collider is StaticBody3D) or (collider is GeometryInstance3D):
 					_place_decal(bullethole_scene, collider, raycast.get_collision_point())
 	else:
-		if is_firing and \
-		  (Input.is_action_just_released(_input_name(FIRE_INPUT_SUFFIX)) or \
-		  ammo_count <= 0):
+		if is_firing and (
+			Input.is_action_just_released(_input_name(FIRE_INPUT_SUFFIX)) or
+			ammo_count <= 0
+		):
 			is_firing = false
 			if ammo_count <= 0:
 				print("Out of ammo!")
@@ -148,8 +149,8 @@ func _handle_recoil_recovery(delta: float) -> void:
 
 func update_weapon_recoil() -> void:
 	var rot = weapon_neutral_rot
-	rot.x += recoil_x    # Kick up
-	rot.y += recoil_y    # Kick left/right randomly
+	rot.x += recoil_x	# Kick up
+	rot.y += recoil_y	# Kick left/right randomly
 	self.rotation = rot
 
 func _handle_ads() -> void:
@@ -164,7 +165,7 @@ func _handle_ads() -> void:
 
 func _handle_movement() -> void:
 	if is_reloading or is_meleeing or is_inspecting or \
-	  should_lock_animation or is_firing or is_ads:
+		should_lock_animation or is_firing or is_ads:
 		return
 	var is_moving = false
 	for suffix in MOVE_INPUTS_SUFFIX.values():
@@ -232,8 +233,32 @@ func _place_decal(decal_scene: PackedScene, target: Node3D, collision_point: Vec
 		return
 	target.add_child(decal)
 	decal.global_position = collision_point
-	if not raycast.get_collision_normal() == Vector3.UP:
-		decal.look_at(collision_point + raycast.get_collision_normal())
+	
+	if decal is BulletHole:
+		var hit_normal = raycast.get_collision_normal().normalized()
+		var up = hit_normal
+		var arbitrary_forward = Vector3.FORWARD
+		if abs(hit_normal.dot(arbitrary_forward)) > 0.99:
+			arbitrary_forward = Vector3.RIGHT
+		var right = up.cross(arbitrary_forward).normalized()
+		var forward = right.cross(up).normalized()
+		var basis = Basis(right, up, forward)
+		decal.global_transform.basis = basis
+		decal.scale = Vector3(1, 1, 1)
+	else:
+		if holder != null:
+			var direction = (holder.global_transform.origin - decal.global_transform.origin).normalized()
+			decal.look_at(holder.global_transform.origin, Vector3.UP)
+		else:
+			var hit_normal = raycast.get_collision_normal().normalized()
+			var up = hit_normal
+			var arbitrary_forward = Vector3.FORWARD
+			if abs(hit_normal.dot(arbitrary_forward)) > 0.99:
+				arbitrary_forward = Vector3.RIGHT
+			var right = up.cross(arbitrary_forward).normalized()
+			var forward = right.cross(up).normalized()
+			var basis = Basis(right, up, forward)
+			decal.global_transform.basis = basis
 
 func _play_ads_sequence(start_anim: String, loop_anim: String) -> void:
 	should_lock_animation = true
